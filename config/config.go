@@ -11,6 +11,7 @@ type WebConfiguration struct {
 	ListenAddr string `yaml:"ListenAddr`
 	BaseURL    string `yaml:"BaseURL"`
 	Debug      bool   `yaml:"debug"`
+	Redirect   string `yaml:"404Redirect"`
 }
 
 // DBConfiguration holds information about database, database driver and connection params

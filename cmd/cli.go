@@ -78,7 +78,7 @@ func create(config *config.Configuration, cmd *cobra.Command) {
 		os.Exit(1)
 	}
 
-	id, err := store.CreateEntry(shared.Entry{
+	_, err = store.CreateEntry(shared.Entry{
 		URL: uri,
 	}, code)
 	if err != nil {
@@ -86,5 +86,5 @@ func create(config *config.Configuration, cmd *cobra.Command) {
 		os.Exit(1)
 	}
 
-	logrus.Infof("ShortURL by %s has been created", id)
+	logrus.Infof("ShortURL by %s has been created", code)
 }

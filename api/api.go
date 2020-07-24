@@ -39,6 +39,12 @@ func New(store *stores.Store, config *config.Configuration) {
 		listenAddr = ":1323"
 	}
 
+	if config.Web.Redirect != "" {
+		e.Any("*", func(c echo.Context) error {
+			return c.Redirect(http.StatusMovedPermanently, config.Web.Redirect)
+		})
+	}
+
 	// Start server
 	e.Logger.Fatal(e.Start(listenAddr))
 }

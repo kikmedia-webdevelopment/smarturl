@@ -35,6 +35,10 @@ func New(config *config.DBConfiguration) (*Store, error) {
 	var err error
 	var s shared.Storage
 
+	if config.URL == "" {
+		return nil, errors.New("missing database url")
+	}
+
 	switch driver := config.Driver; driver {
 	case "bolt":
 		s, err = boltdb.New(config.URL)
