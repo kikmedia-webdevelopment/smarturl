@@ -6,6 +6,7 @@ import (
 	"github.com/juliankoehn/mchurl/config"
 	"github.com/juliankoehn/mchurl/stores"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
 )
 
@@ -18,6 +19,9 @@ type API struct {
 func New(store *stores.Store, config *config.Configuration) {
 	e := echo.New()
 	e.HideBanner = true
+	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
+		StackSize: 1 << 10, // 1 KB
+	}))
 
 	if config.Web.Debug {
 		e.Debug = true
