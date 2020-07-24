@@ -2,5 +2,6 @@ Web:
   ListenAddr: :8080
   BaseURL: "http://localhost:8080"
 DB:
-    Driver: "bolt"
-    URL: "database.bolt"
+    Driver: "sqlite"
+    URL: "database.db"
+    IDLength: 4
