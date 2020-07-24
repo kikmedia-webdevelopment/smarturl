@@ -1,7 +1,6 @@
 package stores
 
 import (
-	"fmt"
 	"strings"
 	"time"
 
@@ -76,7 +75,7 @@ func (s *Store) CreateEntry(entry shared.Entry, givenID string) (string, error) 
 		return "", err
 	}
 
-	return "", nil
+	return id, nil
 }
 
 // GetEntryByID returns an entry by ID
@@ -97,7 +96,6 @@ func (s *Store) GetEntryAndIncrease(id string) (*shared.Entry, error) {
 	if entry.Expiration != nil && !entry.Expiration.IsZero() && time.Now().After(*entry.Expiration) {
 		return nil, ErrEntryIsExpired
 	}
-	fmt.Println("IncreaseVisitCounter")
 	if err := s.storage.IncreaseVisitCounter(id); err != nil {
 		return nil, errors.Wrap(err, "could not increase visitor counter")
 	}
