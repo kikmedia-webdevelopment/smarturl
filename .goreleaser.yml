@@ -2,7 +2,7 @@ project_name: mchurl
 before:
   hooks:
     - go mod download
-    - go generate ./...
+    # - go generate ./...
 builds:
   - main: ./main.go
     env:
@@ -24,9 +24,8 @@ archives:
       format: zip
   files:
     - LICENSE
-    - config.example.yml
+    - config.example.yaml
     - README.md
-  
 checksum:
   name_template: 'checksums.txt'
 snapshot:
@@ -37,3 +36,5 @@ changelog:
     exclude:
     - '^docs:'
     - '^test:'
+release:
+  github:
