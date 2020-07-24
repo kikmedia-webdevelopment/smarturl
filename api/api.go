@@ -30,8 +30,17 @@ func New(store *stores.Store, config *config.Configuration) {
 
 	e.GET("/:id", api.getEntry)
 
+	var listenAddr string
+
+	if config.Web.ListenAddr != "" {
+		listenAddr = config.Web.ListenAddr
+	} else {
+		logrus.Info("missing ListenAddr in Config")
+		listenAddr = ":1323"
+	}
+
 	// Start server
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(listenAddr))
 }
 
 func (a *API) getEntry(c echo.Context) error {
