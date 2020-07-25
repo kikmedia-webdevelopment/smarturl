@@ -6,7 +6,7 @@ before:
 builds:
   - main: ./main.go
     env:
-      - CGO_ENABLED=0
+      - CGO_ENABLED=1
     goos:
       - linux
       - windows
@@ -26,7 +26,8 @@ archives:
     - LICENSE
     - config.example.yaml
     - README.md
-    - ui
+    - ui/public/*
+    - ui/build/*
 checksum:
   name_template: 'checksums.txt'
 snapshot:
