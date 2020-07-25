@@ -72,6 +72,9 @@ archives:
     - README.md
     - ui/public/*
     - ui/build/*
+    - ui/build/css/*
+    - ui/build/js/*
+    - templates/*
 checksum:
   name_template: 'checksums.txt'
 snapshot:
