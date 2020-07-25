@@ -9,6 +9,9 @@ import (
 // ViewData contains data for the view
 type ViewData struct {
 	Webpack *webpack.Webpack
+	Config  struct {
+		APIURL string `json:"apiUrl"`
+	}
 }
 
 // NewViewData creates new data for the view

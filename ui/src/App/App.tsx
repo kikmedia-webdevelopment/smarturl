@@ -1,7 +1,7 @@
 import React from 'react'
 import { history } from 'helpers'
 import { authenticationService } from 'services'
-import { Router, Route } from 'react-router-dom'
+import { Router, Route, Redirect } from 'react-router-dom'
 import { LoginPage, LinkList } from 'pages'
 import { Navigation, PrivateRoute } from 'components'
 import { User } from 'models/user'
@@ -39,10 +39,11 @@ class App extends React.Component<Props, State> {
                     {currentUser &&
                         <Navigation user={currentUser} />
                     }
+                    <Redirect from="/admin" to="/admin/dashboard" />
                     <PrivateRoute path="/admin/dashboard" component={Dashboard} />
                     <PrivateRoute path="/admin/links" component={LinkList} />
                     <Route path="/admin/login" component={LoginPage} />
-                    
+                    <Route component={Dashboard} />
                 </div>
             </Router>
         )

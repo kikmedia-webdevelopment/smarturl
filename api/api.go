@@ -58,23 +58,7 @@ func New(store *stores.Store, config *config.Configuration) {
 
 		e.Static("/static", buildPath+"/static")
 		g := e.Group("/admin")
-		g.GET("*", func(c echo.Context) error {
-			tmpl, err := template.ParseFiles(path.Join("templates", "index.html"))
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Error parsing Template")
-			}
-
-			data, err := NewViewData(buildPath)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Error parsing ViewData")
-			}
-
-			res := c.Response().Writer
-			if err := tmpl.Execute(res, data); err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Error serving Template")
-			}
-			return nil
-		})
+		g.GET("*", api.serveAdmin)
 
 		a := e.Group("/api")
 		a.Use(middleware.JWTWithConfig(middleware.JWTConfig{
