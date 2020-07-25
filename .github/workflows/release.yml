@@ -29,6 +29,9 @@ jobs:
       - name: npm run build
         run: npm run build
         working-directory: ./ui
+      - name: delete package-lock.json
+        run: rm package-lock.json
+        working-directory: ./ui
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v2
         with:
