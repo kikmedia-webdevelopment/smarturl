@@ -15,6 +15,6 @@ mchurl
 database.bolt
 database.db
 .DS_Store
-# templates
+templates
 # Dependency directories (remove the comment below to include it)
 # vendor/
