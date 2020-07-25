@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/juliankoehn/mchurl/config"
-	"github.com/juliankoehn/mchurl/stores/boltdb"
+	"github.com/juliankoehn/mchurl/models"
 	"github.com/juliankoehn/mchurl/stores/shared"
 	"github.com/juliankoehn/mchurl/stores/sqlite"
 	"github.com/juliankoehn/mchurl/utils"
@@ -40,8 +40,6 @@ func New(config *config.DBConfiguration) (*Store, error) {
 	}
 
 	switch driver := config.Driver; driver {
-	case "bolt":
-		s, err = boltdb.New(config.URL)
 	case "sqlite":
 		s, err = sqlite.New(config.URL)
 	default:
@@ -58,7 +56,7 @@ func New(config *config.DBConfiguration) (*Store, error) {
 	}, nil
 }
 
-func (s *Store) CreateEntry(entry shared.Entry, givenID string) (string, error) {
+func (s *Store) CreateEntry(entry shared.Entry, givenID string) (*shared.Entry, error) {
 	entry.URL = strings.Replace(entry.URL, " ", "%20", -1)
 	var id string
 	var err error
@@ -68,18 +66,15 @@ func (s *Store) CreateEntry(entry shared.Entry, givenID string) (string, error) 
 	} else {
 		id, err = utils.GenerateRandomString(s.idLength)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
 	}
 
-	if err := s.storage.CreateEntry(entry, id); err != nil {
-		if err.Error() == "entry already exists" {
-			return "", err
-		}
-		return "", err
+	link, err := s.storage.CreateEntry(entry, id)
+	if err != nil {
+		return nil, err
 	}
-
-	return id, nil
+	return link, nil
 }
 
 // GetEntryByID returns an entry by ID
@@ -111,4 +106,32 @@ func (s *Store) GetEntryAndIncrease(id string) (*shared.Entry, error) {
 // DeleteEntry deletes an Entry fully from the DB
 func (s *Store) DeleteEntry(id string) error {
 	return s.storage.DeleteEntry(id)
+}
+
+// CreateUser creates a new User
+func (s *Store) CreateUser(user models.User) (*models.User, error) {
+	return s.storage.CreateUser(user)
+}
+
+// FindUserByEmail returns a user if given by email
+func (s *Store) FindUserByEmail(email string) (*models.User, error) {
+	return s.storage.FindUserByEmail(email)
+}
+
+// LinksList lists all available links
+func (s *Store) LinksList() ([]*shared.Entry, error) {
+	return s.storage.LinksList()
+}
+
+// LinkUpdate updates a link
+func (s *Store) LinkUpdate(link *shared.Entry) (*shared.Entry, error) {
+	return s.storage.LinkUpdate(link)
+}
+
+func (s *Store) UserUpdateToken(id uint, token string) error {
+	return s.storage.UserUpdateToken(id, token)
+}
+
+func (s *Store) FindUserByToken(token string) (*models.User, error) {
+	return s.storage.FindUserByToken(token)
 }

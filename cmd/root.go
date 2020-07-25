@@ -33,16 +33,27 @@ var (
 			execWithConfigAndCmd(cmd, delete)
 		},
 	}
+
+	// users
+	createUserCmd = cobra.Command{
+		Use: "createUser",
+		Run: func(cmd *cobra.Command, args []string) {
+			execWithConfigAndCmd(cmd, createUser)
+		},
+	}
 )
 
 func init() {
-	rootCmd.AddCommand(&serveCmd, &createCmd, &deleteCmd)
+	rootCmd.AddCommand(&serveCmd, &createCmd, &deleteCmd, &createUserCmd)
 	createCmd.Flags().StringP("url", "u", "", "the targeted URI")
 	createCmd.Flags().StringP("code", "c", "", "specific short code for the URL")
 	createCmd.MarkFlagRequired("url")
 
 	deleteCmd.Flags().StringP("code", "c", "", "specific short code for the URL")
 	deleteCmd.MarkFlagRequired("code")
+
+	createUserCmd.Flags().StringP("email", "e", "", "email of the user to create")
+	createUserCmd.MarkFlagRequired("email")
 }
 
 // Execute will setup and return the root command

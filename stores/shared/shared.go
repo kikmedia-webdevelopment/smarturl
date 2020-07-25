@@ -3,6 +3,8 @@ package shared
 import (
 	"errors"
 	"time"
+
+	"github.com/juliankoehn/mchurl/models"
 )
 
 // Storage is an interface which will be implmented by each storage
@@ -12,7 +14,13 @@ type Storage interface {
 	GetVisitors(string) ([]Visitor, error)
 	DeleteEntry(string) error
 	IncreaseVisitCounter(string) error
-	CreateEntry(Entry, string) error
+	CreateEntry(Entry, string) (*Entry, error)
+	CreateUser(models.User) (*models.User, error)
+	FindUserByEmail(string) (*models.User, error)
+	FindUserByToken(token string) (*models.User, error)
+	LinksList() ([]*Entry, error)
+	LinkUpdate(*Entry) (*Entry, error)
+	UserUpdateToken(id uint, token string) error
 	Close() error
 }
 

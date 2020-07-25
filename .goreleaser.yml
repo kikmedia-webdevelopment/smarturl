@@ -26,6 +26,7 @@ archives:
     - LICENSE
     - config.example.yaml
     - README.md
+    - ui
 checksum:
   name_template: 'checksums.txt'
 snapshot:

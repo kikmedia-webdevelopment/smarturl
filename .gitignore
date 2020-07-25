@@ -14,5 +14,6 @@ config.yaml
 mchurl
 database.bolt
 database.db
+# templates
 # Dependency directories (remove the comment below to include it)
 # vendor/

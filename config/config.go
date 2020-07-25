@@ -23,8 +23,9 @@ type DBConfiguration struct {
 
 // Configuration holds all the configuration that applies to the shortener application.
 type Configuration struct {
-	Web WebConfiguration `yaml:"Web"`
-	DB  DBConfiguration  `yaml:"DB"`
+	Secret string           `yaml:"Secret"`
+	Web    WebConfiguration `yaml:"Web"`
+	DB     DBConfiguration  `yaml:"DB"`
 }
 
 // LoadGlobal loads the configuration from file and env variables.

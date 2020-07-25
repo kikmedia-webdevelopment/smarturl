@@ -5,8 +5,10 @@ import (
 	"os"
 
 	"github.com/juliankoehn/mchurl/config"
+	"github.com/juliankoehn/mchurl/models"
 	"github.com/juliankoehn/mchurl/stores"
 	"github.com/juliankoehn/mchurl/stores/shared"
+	"github.com/juliankoehn/mchurl/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -15,6 +17,38 @@ var (
 	uri  string
 	code string
 )
+
+func createUser(config *config.Configuration, cmd *cobra.Command) {
+	var email string
+	emailFlag := cmd.Flags().Lookup("email")
+	if emailFlag != nil {
+		if emailFlag.Value.String() != "" {
+			email = emailFlag.Value.String()
+		}
+	}
+
+	store, err := stores.New(&config.DB)
+	if err != nil {
+		logrus.Fatal(err)
+		os.Exit(1)
+	}
+
+	pass, err := utils.RandomPass(12)
+	if err != nil {
+		logrus.Fatal(err)
+		os.Exit(1)
+	}
+
+	user, err := store.CreateUser(models.User{
+		Password: pass,
+		Email:    email,
+	})
+	if err != nil {
+		logrus.Fatalf("Error while creating User: %+v", err)
+		os.Exit(1)
+	}
+	logrus.Infof("User `%s` with password `%s` created", user.Email, pass)
+}
 
 func delete(config *config.Configuration, cmd *cobra.Command) {
 	var code string

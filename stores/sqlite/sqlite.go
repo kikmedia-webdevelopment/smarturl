@@ -6,6 +6,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	"github.com/juliankoehn/mchurl/models"
 	"github.com/juliankoehn/mchurl/stores/shared"
 	"github.com/pkg/errors"
 )
@@ -21,7 +22,10 @@ func New(path string) (*SqliteStore, error) {
 		return nil, errors.Wrap(err, "could not open sqlite3 database")
 	}
 
-	db.AutoMigrate(&shared.Entry{})
+	db.AutoMigrate(
+		&shared.Entry{},
+		&models.User{},
+	)
 	return &SqliteStore{
 		db: db,
 	}, nil
@@ -33,18 +37,18 @@ func (s *SqliteStore) Close() error {
 }
 
 // CreateEntry creates an entry by a given ID and returns an error
-func (s *SqliteStore) CreateEntry(entry shared.Entry, id string) error {
+func (s *SqliteStore) CreateEntry(entry shared.Entry, id string) (*shared.Entry, error) {
 	currentTime := time.Now()
 	entry.CreatedOn = &currentTime
 	entry.ID = id
 
 	if err := s.db.Create(&entry).Error; err != nil {
 		if strings.Contains(err.Error(), "UNIQUE") {
-			return errors.New("entry already exists")
+			return nil, errors.New("entry already exists")
 		}
-		return err
+		return nil, err
 	}
-	return nil
+	return &entry, nil
 }
 
 // DeleteEntry deleted an entry by a given ID and returns an error
