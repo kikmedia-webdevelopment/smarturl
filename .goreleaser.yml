@@ -4,13 +4,57 @@ before:
     - go mod download
     # - go generate ./...
 builds:
-  - main: ./main.go
+  - id: mchurl_darwin
+    main: ./main.go
+    env:
+      - CGO_ENABLED=1
+      - CC=o64-clang
+      - CXX=o64-clang++
+    goos:
+      - darwin
+    goarch:
+      - amd64
+  - id: mchurl_linux
+    main: ./main.go
     env:
       - CGO_ENABLED=1
     goos:
       - linux
+    goarch:
+      - amd64
+      - 386
+  - id: mchurl_windows_i686
+    binary: mchurl
+    main: ./main.go
+    ldflags:
+    - "-extldflags '-static'"
+    env:
+      - CGO_ENABLED=1
+      - CC=i686-w64-mingw32-gcc
+      - CXX=i686-w64-mingw32-g++
+    flags:
+      - -tags
+      - sqlite
+    goos:
       - windows
-      - darwin
+    goarch:
+      - 386
+  - id: mchurl_windows_x64
+    binary: mchurl
+    main: ./main.go
+    ldflags:
+    - "-extldflags '-static'"
+    env:
+      - CGO_ENABLED=1
+      - CC=x86_64-w64-mingw32-gcc
+      - CXX=x86_64-w64-mingw32-g++
+    flags:
+      - -tags
+      - sqlite
+    goos:
+      - windows
+    goarch:
+      - amd64
 archives:
 -
   replacements:
