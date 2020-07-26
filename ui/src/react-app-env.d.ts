@@ -1,7 +1,7 @@
 /// <reference types="react-scripts" />
 
 interface Config {
-    apiUrl: string | null
+    apiurl: string | null
     token: string | null
 }
 
