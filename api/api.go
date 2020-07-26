@@ -49,6 +49,8 @@ func New(store *stores.Store, config *config.Configuration) {
 		config: config,
 	}
 
+	e.GET("/:id", api.loadLink)
+
 	if enableAdmin {
 		// setup admin ui
 		t := &Template{
@@ -57,8 +59,8 @@ func New(store *stores.Store, config *config.Configuration) {
 		e.Renderer = t
 
 		e.Static("/static", buildPath+"/static")
-		g := e.Group("/admin")
-		g.GET("*", api.serveAdmin)
+		e.GET("/admin", api.serveAdmin)
+		e.GET("/admin/*", api.serveAdmin)
 
 		a := e.Group("/api")
 		a.Use(middleware.JWTWithConfig(middleware.JWTConfig{
@@ -83,8 +85,6 @@ func New(store *stores.Store, config *config.Configuration) {
 
 		a.GET("/stats", api.listStats)
 	}
-
-	e.GET("/:id", api.loadLink)
 
 	var listenAddr string
 
