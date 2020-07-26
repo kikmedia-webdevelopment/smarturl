@@ -1,8 +1,9 @@
 import React from 'react'
 
+export type IconName = 'trash' | 'edit'
 
 interface Props {
-    iconName: 'trash' | 'edit'
+    iconName: IconName
 }
 
 export class Icon extends React.PureComponent<Props> {
@@ -37,10 +38,9 @@ export class Icon extends React.PureComponent<Props> {
         return (
             <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
+                className="h-6 w-6 stroke-current"
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
-                stroke="#2c3e50"
                 fill="none"
                 stroke-linecap="round"
                 stroke-linejoin="round"
