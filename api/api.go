@@ -68,6 +68,10 @@ func New(store *stores.Store, config *config.Configuration) {
 		e.GET("/admin", api.serveAdmin)
 		e.GET("/admin/*", api.serveAdmin)
 
+		e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+			Level: 5,
+		}))
+
 		a := e.Group("/api")
 		a.Use(middleware.JWTWithConfig(middleware.JWTConfig{
 			SigningKey: []byte(config.JWT.Secret),
