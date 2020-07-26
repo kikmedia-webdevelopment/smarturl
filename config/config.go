@@ -30,6 +30,7 @@ type SMTPConfiguration struct {
 
 // WebConfiguration keeps information for our WebService
 type WebConfiguration struct {
+	UseTLS     bool   `json:"tls" yaml:"tls"`
 	ListenAddr string `yaml:"ListenAddr`
 	BaseURL    string `yaml:"BaseURL"`
 	Debug      bool   `yaml:"debug"`

@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 type API struct {
@@ -24,6 +25,11 @@ func New(store *stores.Store, config *config.Configuration) {
 	enableAdmin := true
 
 	e := echo.New()
+
+	if config.Web.UseTLS {
+		e.AutoTLSManager.Cache = autocert.DirCache(".cache")
+	}
+
 	e.HideBanner = true
 	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
 		StackSize: 1 << 10, // 1 KB
@@ -99,6 +105,12 @@ func New(store *stores.Store, config *config.Configuration) {
 		e.Any("/", func(c echo.Context) error {
 			return c.Redirect(http.StatusMovedPermanently, config.Web.Redirect)
 		})
+	}
+
+	if config.Web.UseTLS {
+		go func() {
+			e.Logger.Fatal(e.StartAutoTLS(":443"))
+		}()
 	}
 
 	// Start server
