@@ -18,7 +18,7 @@ func TestSqlite(t *testing.T) {
 		t.Error(err)
 	}
 
-	if err := store.CreateEntry(shared.Entry{
+	if _, err := store.CreateEntry(shared.Entry{
 		URL:        "https://www.google.com",
 		RemoteAddr: "0.0.0.0:443",
 	}, testId); err != nil {
@@ -42,7 +42,9 @@ func TestSqlite(t *testing.T) {
 	}
 
 	// increase visit counter
-	if err := store.IncreaseVisitCounter(testId); err != nil {
+	if err := store.IncreaseVisitCounter(&shared.Entry{
+		ID: testId,
+	}); err != nil {
 		t.Error(err)
 	}
 

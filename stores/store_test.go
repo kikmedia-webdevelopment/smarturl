@@ -48,7 +48,7 @@ func TestStore(t *testing.T) {
 	}
 
 	// test create Entry
-	createdId, err := store.CreateEntry(shared.Entry{
+	createdEntry, err := store.CreateEntry(shared.Entry{
 		URL: "https://www.google.com",
 	}, "")
 	if err != nil {
@@ -56,11 +56,11 @@ func TestStore(t *testing.T) {
 	}
 
 	// test find entry
-	entry, err := store.GetEntryAndIncrease(createdId)
+	entry, err := store.GetEntryAndIncrease(createdEntry.ID)
 	if err != nil {
 		t.Error(err)
 	}
-	if entry.ID != createdId {
+	if entry.ID != createdEntry.ID {
 		t.Error("received entry, but wrong id")
 	}
 
