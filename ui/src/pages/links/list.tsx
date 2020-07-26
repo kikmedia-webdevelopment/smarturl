@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Modal, Form, TextInput, FormLabel, Button } from 'components';
+import { Table, Modal, Form, TextInput, FormLabel, Button, Icon } from 'components';
 import { linkService } from 'services/link.service';
 import { Link } from 'models/link';
 import { uid } from 'react-uid'
@@ -180,11 +180,13 @@ export class LinkList extends React.Component<Props, State> {
                                                     onClick={() => this.onDeleteClick(link)}
                                                     className="text-red-600 hover:text-red-900"
                                                 >
+                                                    <Icon iconName="trash" />
                                                     Löschen
                                             </button>
                                                 <button
                                                     onClick={() => this.onEditClick(link)}
                                                     className="text-secondary hover:text-brand">
+                                                    <Icon iconName="edit" />
                                                     Bearbeiten
                                             </button>
                                             </div>
