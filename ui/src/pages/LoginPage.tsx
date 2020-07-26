@@ -36,7 +36,7 @@ export class LoginPage extends React.Component<Props, State> {
         return (
             <React.Fragment>
                 <div className="h-1 bg-brand"></div>
-                <div className="max-w-lg p-8 mx-auto">
+                <div className="max-w-lg p-8 mx-auto w-full">
                     <div className="flex justify-around">
                         <svg width="170.078px" height="170.08px" viewBox="0 0 170.078 170.08" xmlns="http://www.w3.org/2000/svg">
                             <path fill="#073B68" d="M0 0h170.078v170.08H0V0z" />
