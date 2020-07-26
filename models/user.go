@@ -17,6 +17,14 @@ type User struct {
 	Password     string     `json:"password,omitempty"`
 	Token        string     `json:"token,omitempty"`
 	TokenExpires time.Time  `json:"token_expires"`
+
+	RecoveryToken  string     `json:"-" db:"recovery_token"`
+	RecoverySendAt *time.Time `json:"recovery_sent_at,omitempty" db:"recovery_sent_at"`
+
+	EmailChangeToken  string     `json:"-" db:"email_change_token"`
+	EmailChange       string     `json:"new_email,omitempty" db:"email_change"`
+	EmailChangeSentAt *time.Time `json:"email_change_sent_at,omitempty" db:"email_change_sent_at"`
+	LastSignInAt      *time.Time `json:"last_sign_in_at,omitempty" db:"last_sign_in_at"`
 }
 
 func (u *User) Authenticate(password string) bool {
