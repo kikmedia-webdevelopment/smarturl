@@ -1,5 +1,7 @@
 # tiny URL Shortener for `Mode-Centrum-Hamburg`
 
+`MCHURL` ist ein URL-Shortening Service für das [Mode-Centrum Hamburg](https://www.modecentrum-hamburg.de/). 
+
 # cli commands
 
 - mchurl create -u https://www.modecentrum-hamburg.de/das-mch/service.html -c code
