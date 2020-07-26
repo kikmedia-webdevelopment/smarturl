@@ -2,8 +2,6 @@ name: Build Go Binaries and release
 
 on:
   push:
-    branches:
-      - "*"
     tags:
       - "v*.*.*"
 jobs:
