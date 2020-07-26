@@ -96,6 +96,8 @@ var serveCmd = cobra.Command{
 
 func serve(config *config.Configuration) {
 
+	logrus.Info(config)
+
 	store, err := stores.New(&config.DB)
 	if err != nil {
 		logrus.Fatal(err)

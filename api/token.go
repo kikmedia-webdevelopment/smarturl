@@ -25,7 +25,7 @@ type tokenPair struct {
 }
 
 func (a *API) generateTokenPair(usr *models.User) (*tokenPair, error) {
-	secret := a.config.Secret
+	secret := a.config.JWT.Secret
 
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)

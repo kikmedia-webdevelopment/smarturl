@@ -43,13 +43,20 @@ type DBConfiguration struct {
 	IDLength int    `yaml:"IDLength" required:"true"`
 }
 
+// JWTConfiguration holds all the JWT related configuration.
+type JWTConfiguration struct {
+	Secret string `json:"secret" yaml:"secret" required:"true"`
+	Exp    int    `json:"exp" yaml:"exp"`
+}
+
 // Configuration holds all the configuration that applies to the shortener application.
 type Configuration struct {
-	Secret string            `yaml:"Secret"`
-	Web    WebConfiguration  `yaml:"Web"`
-	DB     DBConfiguration   `yaml:"DB"`
-	SMTP   SMTPConfiguration `yaml:"smtp"`
-	Mailer struct {
+	SiteURL string            `json:"site_url" yaml:"site_url" split_words:"true" required:"true"`
+	JWT     JWTConfiguration  `json:"jwt" yaml:"jwt"`
+	Web     WebConfiguration  `yaml:"Web"`
+	DB      DBConfiguration   `yaml:"DB"`
+	SMTP    SMTPConfiguration `yaml:"smtp"`
+	Mailer  struct {
 		Subjects  EmailContentConfiguration `yaml:"subjects"`
 		Templates EmailContentConfiguration `yaml:"templates"`
 		URLPaths  EmailContentConfiguration `yaml:"url_paths"`
@@ -76,5 +83,14 @@ func LoadGlobal(filename string) (*Configuration, error) {
 		return nil, err
 	}
 
+	config.ApplyDefaults()
+
 	return config, nil
+}
+
+// ApplyDefaults sets defaults for a Configuration
+func (config *Configuration) ApplyDefaults() {
+	if config.JWT.Exp == 0 {
+		config.JWT.Exp = 3600
+	}
 }
