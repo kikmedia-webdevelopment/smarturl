@@ -19,7 +19,7 @@ type User struct {
 	TokenExpires time.Time  `json:"token_expires"`
 
 	RecoveryToken  string     `json:"-" db:"recovery_token"`
-	RecoverySendAt *time.Time `json:"recovery_sent_at,omitempty" db:"recovery_sent_at"`
+	RecoverySentAt *time.Time `json:"recovery_sent_at,omitempty" db:"recovery_sent_at"`
 
 	EmailChangeToken  string     `json:"-" db:"email_change_token"`
 	EmailChange       string     `json:"new_email,omitempty" db:"email_change"`
@@ -46,6 +46,21 @@ func (u *User) BeforeCreate(scope *gorm.Scope) (err error) {
 	}
 	u.Password = pw
 	return
+}
+
+func (u *User) BeforeSave(scope *gorm.Scope) error {
+	if u.RecoverySentAt != nil && u.RecoverySentAt.IsZero() {
+		u.RecoverySentAt = nil
+	}
+
+	if u.EmailChangeSentAt != nil && u.EmailChangeSentAt.IsZero() {
+		u.EmailChangeSentAt = nil
+	}
+	if u.LastSignInAt != nil && u.LastSignInAt.IsZero() {
+		u.LastSignInAt = nil
+	}
+
+	return nil
 }
 
 // hashPassword generates a hashed password from a plaintext string
