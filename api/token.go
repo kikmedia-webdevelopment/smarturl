@@ -26,12 +26,13 @@ type tokenPair struct {
 
 func (a *API) generateTokenPair(usr *models.User) (*tokenPair, error) {
 	secret := a.config.JWT.Secret
+	expiresIn := time.Second * time.Duration(a.config.JWT.Exp)
 
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
 	claims["id"] = usr.ID
 	claims["email"] = usr.Email
-	claims["exp"] = time.Now().Add(time.Minute * 15).Unix()
+	claims["exp"] = time.Now().Add(expiresIn).Unix()
 	// Generate encoded token and send it as response
 	tkn, err := token.SignedString([]byte(secret))
 	if err != nil {
