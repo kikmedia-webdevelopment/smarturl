@@ -2,7 +2,7 @@ import React from 'react'
 import { history } from 'helpers'
 import { authenticationService } from 'services'
 import { Router, Route, Redirect } from 'react-router-dom'
-import { LoginPage, LinkList } from 'pages'
+import { LoginPage, LinkList, ProfilePage } from 'pages'
 import { Navigation, PrivateRoute } from 'components'
 import { User } from 'models/user'
 import { Dashboard } from 'pages/Dashboard'
@@ -42,6 +42,7 @@ class App extends React.Component<Props, State> {
                     <Redirect exact from="/admin" to="/admin/dashboard" />
                     <PrivateRoute exact path="/admin/dashboard" component={Dashboard} />
                     <PrivateRoute exact path="/admin/links" component={LinkList} />
+                    <PrivateRoute exact path="/admin/profile" component={ProfilePage} />
                     <Route exact path="/admin/login" component={LoginPage} />
                 </div>
             </Router>

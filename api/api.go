@@ -64,7 +64,7 @@ func New(store *stores.Store, config *config.Configuration) {
 
 		a := e.Group("/api")
 		a.Use(middleware.JWTWithConfig(middleware.JWTConfig{
-			SigningKey: []byte(config.Secret),
+			SigningKey: []byte(config.JWT.Secret),
 			Skipper: func(c echo.Context) bool {
 				// skip auth route
 				if c.Path() == "/api/users/authenticate" {
