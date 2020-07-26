@@ -9,4 +9,4 @@ windows:
 test:
 	$(GOTEST) -v -coverprofile=coverage.out ./...
 	$(GOCOVER) -func=coverage.out
-    $(GOCOVER) -html=coverage.out
+	$(GOCOVER) -html=coverage.out
