@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Modal, Form, TextInput, FormLabel, Button, Icon, IconButton } from 'components';
+import { Table, Modal, Form, TextInput, FormLabel, Button, IconButton, ModalConfirm } from 'components';
 import { linkService } from 'services/link.service';
 import { Link } from 'models/link';
 import { uid } from 'react-uid'
@@ -10,6 +10,7 @@ interface State {
     links: Link[]
     editModal: boolean
     createModal: boolean
+    showDeleteConfirm: boolean
     currentLink: Link | null
 }
 
@@ -22,6 +23,7 @@ export class LinkList extends React.Component<Props, State> {
             links: [],
             editModal: false,
             createModal: false,
+            showDeleteConfirm: false,
             currentLink: null
         }
     }
@@ -118,10 +120,25 @@ export class LinkList extends React.Component<Props, State> {
             }).finally(() => this.setState({ loading: false, editModal: false }))
     }
 
-    onDeleteClick = (item: Link) => {
+    onDeleteClose = () => {
         this.setState({
-            loading: true
+            currentLink: null,
+            showDeleteConfirm: false,
         })
+    }
+    onDeleteConfirm = () => {
+        const { currentLink: item } = this.state
+        if (!item) {
+            this.setState({
+                showDeleteConfirm: false
+            })
+            return
+        }
+
+        this.setState({
+            loading: true,
+        })
+
         linkService.destroy(item)
             .then(() => {
                 let { links } = this.state
@@ -130,7 +147,25 @@ export class LinkList extends React.Component<Props, State> {
                     links: links
                 })
             })
+            .finally(() => this.setState({ loading: false, currentLink: null, showDeleteConfirm: false }))
+    }
+
+    onDeleteClick = (item: Link) => {
+        this.setState({
+            showDeleteConfirm: true,
+            currentLink: Object.assign({}, item)
+        })
+        /**
+         * linkService.destroy(item)
+            .then(() => {
+                let { links } = this.state
+                links = links.filter(l => l.id !== item.id)
+                this.setState({
+                    links: links
+                })
+            })
             .finally(() => this.setState({ loading: false }))
+         */
     }
 
     render() {
@@ -195,6 +230,18 @@ export class LinkList extends React.Component<Props, State> {
                             </Table.Body>
                         </Table>
                     </div>
+                    {this.state.showDeleteConfirm && this.state.currentLink && (
+                        <ModalConfirm
+                            title="Bist du Sicher?"
+                            isShown={this.state.showDeleteConfirm}
+                            onClose={() => this.onDeleteClose()}
+                            onConfirm={() => this.onDeleteConfirm()}
+                        >
+                            Du bist gerade dabei
+                            `{this.state.currentLink.url}` mit dem Code
+                            `{this.state.currentLink.id}` zu löschen
+                        </ModalConfirm>
+                    )}
                     {this.state.editModal && this.state.currentLink && (
                         <Modal
                             isShown={this.state.editModal}
