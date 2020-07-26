@@ -108,9 +108,10 @@ func New(store *stores.Store, config *config.Configuration) {
 	}
 
 	if config.Web.UseTLS {
-		go func() {
+		logrus.Info("Starting TLS Server")
+		go func(c *echo.Echo) {
 			e.Logger.Fatal(e.StartAutoTLS(":443"))
-		}()
+		}(e)
 	}
 
 	// Start server
