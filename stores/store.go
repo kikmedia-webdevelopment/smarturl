@@ -95,7 +95,7 @@ func (s *Store) GetEntryAndIncrease(id string) (*shared.Entry, error) {
 	if entry.Expiration != nil && !entry.Expiration.IsZero() && time.Now().After(*entry.Expiration) {
 		return nil, ErrEntryIsExpired
 	}
-	if err := s.storage.IncreaseVisitCounter(id); err != nil {
+	if err := s.storage.IncreaseVisitCounter(entry); err != nil {
 		return nil, errors.Wrap(err, "could not increase visitor counter")
 	}
 
@@ -134,4 +134,8 @@ func (s *Store) UserUpdateToken(id uint, token string) error {
 
 func (s *Store) FindUserByToken(token string) (*models.User, error) {
 	return s.storage.FindUserByToken(token)
+}
+
+func (s *Store) ListStats() (*int, *int, error) {
+	return s.storage.ListStats()
 }

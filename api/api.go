@@ -80,9 +80,11 @@ func New(store *stores.Store, config *config.Configuration) {
 		a.PATCH("/links", api.LinkUpdate)
 		a.POST("/links", api.LinkCreate)
 		a.DELETE("/links", api.LinkDelete)
+
+		a.GET("/stats", api.listStats)
 	}
 
-	e.GET("/:id", api.getEntry)
+	e.GET("/:id", api.loadLink)
 
 	var listenAddr string
 
@@ -101,23 +103,4 @@ func New(store *stores.Store, config *config.Configuration) {
 
 	// Start server
 	e.Logger.Fatal(e.Start(listenAddr))
-}
-
-func (a *API) getEntry(c echo.Context) error {
-	id := c.Param("id")
-	if id == "" {
-		return c.String(http.StatusNotFound, "id not found")
-	}
-
-	entry, err := a.store.GetEntryAndIncrease(id)
-	if err != nil {
-		logrus.Error(err)
-		return c.String(http.StatusNotFound, "id not found")
-	}
-
-	if entry.URL != "" {
-		return c.Redirect(http.StatusMovedPermanently, entry.URL)
-	}
-
-	return c.String(http.StatusNotFound, "id not found")
 }

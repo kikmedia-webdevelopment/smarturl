@@ -35,15 +35,14 @@ class App extends React.Component<Props, State> {
 
         return (
             <Router history={history}>
-                <div>
+                <div className="flex flex-col min-h-screen">
                     {currentUser &&
                         <Navigation user={currentUser} />
                     }
-                    <Redirect from="/admin" to="/admin/dashboard" />
-                    <PrivateRoute path="/admin/dashboard" component={Dashboard} />
-                    <PrivateRoute path="/admin/links" component={LinkList} />
-                    <Route path="/admin/login" component={LoginPage} />
-                    <Route component={Dashboard} />
+                    <Redirect exact from="/admin" to="/admin/dashboard" />
+                    <PrivateRoute exact path="/admin/dashboard" component={Dashboard} />
+                    <PrivateRoute exact path="/admin/links" component={LinkList} />
+                    <Route exact path="/admin/login" component={LoginPage} />
                 </div>
             </Router>
         )

@@ -70,8 +70,15 @@ func (s *SqliteStore) GetEntryByID(id string) (*shared.Entry, error) {
 
 // IncreaseVisitCounter increases the visit counter and sets the current
 // time as the last visit ones
-func (s *SqliteStore) IncreaseVisitCounter(id string) error {
-	if err := s.db.Model(shared.Entry{}).Where("id = ?", id).UpdateColumn("visit_count", gorm.Expr("visit_count + ?", 1)).Error; err != nil {
+// gorm.expr only works on initial 0
+// dunno why
+func (s *SqliteStore) IncreaseVisitCounter(link *shared.Entry) error {
+	currentTime := time.Now()
+
+	if err := s.db.Model(shared.Entry{}).Where("id = ?", link.ID).Updates(map[string]interface{}{
+		"visit_count": gorm.Expr("visit_count + ?", 1),
+		"last_visit":  currentTime,
+	}).Error; err != nil {
 		return err
 	}
 	return nil

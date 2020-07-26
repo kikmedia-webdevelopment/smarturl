@@ -13,7 +13,7 @@ type Storage interface {
 	GetEntryByID(string) (*Entry, error)
 	GetVisitors(string) ([]Visitor, error)
 	DeleteEntry(string) error
-	IncreaseVisitCounter(string) error
+	IncreaseVisitCounter(*Entry) error
 	CreateEntry(Entry, string) (*Entry, error)
 	CreateUser(models.User) (*models.User, error)
 	FindUserByEmail(string) (*models.User, error)
@@ -22,6 +22,9 @@ type Storage interface {
 	LinkUpdate(*Entry) (*Entry, error)
 	UserUpdateToken(id uint, token string) error
 	Close() error
+
+	// stats
+	ListStats() (*int, *int, error)
 }
 
 // Entry is the data set which is stored in the DB as JSON

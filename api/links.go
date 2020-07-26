@@ -5,7 +5,27 @@ import (
 
 	"github.com/juliankoehn/mchurl/stores/shared"
 	"github.com/labstack/echo/v4"
+	"github.com/sirupsen/logrus"
 )
+
+func (a *API) loadLink(c echo.Context) error {
+	id := c.Param("id")
+	if id == "" {
+		return c.String(http.StatusNotFound, "id not found")
+	}
+
+	link, err := a.store.GetEntryAndIncrease(id)
+	if err != nil {
+		logrus.Error(err)
+		return c.String(http.StatusNotFound, "id not found")
+	}
+
+	if link.URL != "" {
+		return c.Redirect(http.StatusMovedPermanently, link.URL)
+	}
+
+	return c.String(http.StatusNotFound, "id not found")
+}
 
 // LinkDelete deletes a single entry
 func (a *API) LinkDelete(c echo.Context) error {
