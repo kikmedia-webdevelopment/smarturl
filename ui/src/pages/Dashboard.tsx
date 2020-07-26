@@ -2,6 +2,7 @@ import React from 'react';
 import { statsService } from 'services';
 import { Stats } from 'models/stats';
 import { Loading } from 'components';
+import { Link } from 'react-router-dom';
 
 interface Props {}
 interface State {
@@ -53,14 +54,16 @@ export class Dashboard extends React.Component<Props, State> {
                             <div className="w-full px-6 sm:w-1/2 xl:w-1/3">
                                 {/** card start */}
                                 <div className="flex items-center px-5 py-6 shadow rounded-md bg-white">
-                                    <div className="p-3 rounded-full bg-blue-500 bg-opacity-75">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#FFFFFF" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                            <path stroke="none" d="M0 0h24v24H0z" />
-                                            <path d="M11 7h-5a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-5" />
-                                            <line x1="10" y1="14" x2="20" y2="4" />
-                                            <polyline points="15 4 20 4 20 9" />
-                                        </svg>
-                                    </div>
+                                    <Link to="/admin/links">
+                                        <div className="cursor-pointer p-3 rounded-full bg-blue-500 bg-opacity-75">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 24 24" strokeWidth="1.5" stroke="#FFFFFF" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                                <path stroke="none" d="M0 0h24v24H0z" />
+                                                <path d="M11 7h-5a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-5" />
+                                                <line x1="10" y1="14" x2="20" y2="4" />
+                                                <polyline points="15 4 20 4 20 9" />
+                                            </svg>
+                                        </div>
+                                    </Link>
                                     <div className="mx-5">
                                         <h4 className="text-2xl font-semibold text-gray-700">{stats.entries}</h4>
                                         <div className="text-gray-500">Links</div>
