@@ -34,7 +34,7 @@ func New(store *stores.Store, config *config.Configuration) {
 	e.Use(middleware.RecoverWithConfig(middleware.RecoverConfig{
 		StackSize: 1 << 10, // 1 KB
 	}))
-
+	e.Use(middleware.Logger())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowHeaders: []string{
@@ -68,9 +68,9 @@ func New(store *stores.Store, config *config.Configuration) {
 		e.GET("/admin", api.serveAdmin)
 		e.GET("/admin/*", api.serveAdmin)
 
-		e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
-			Level: 5,
-		}))
+		//e.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+		//	Level: 5,
+		//}))
 
 		a := e.Group("/api")
 		a.Use(middleware.JWTWithConfig(middleware.JWTConfig{
