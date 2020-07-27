@@ -18,14 +18,15 @@ func (a *API) loadLink(c echo.Context) error {
 
 	err := a.db.Transaction(func(tx *gorm.DB) error {
 		var terr error
-		link, terr = models.GetLinkByID(tx, id)
+		tlink, terr := models.GetLinkByID(tx, id)
 		if terr != nil {
 			return c.String(http.StatusNotFound, "id not found")
 		}
 
-		if terr := models.IncreaseVisitCounter(tx, link); terr != nil {
+		if terr := models.IncreaseVisitCounter(tx, tlink); terr != nil {
 			return c.String(http.StatusNotFound, "id not found")
 		}
+		link = tlink
 		return nil
 	})
 

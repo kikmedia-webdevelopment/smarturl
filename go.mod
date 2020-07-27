@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	github.com/badoux/checkmail v0.0.0-20200623144435-f9f80cb795fa
-	github.com/delivc/identity v0.1.1
 	github.com/delivc/team v0.0.0-20200312095701-d0b1591d2c73
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
@@ -28,7 +27,6 @@ require (
 	github.com/spf13/viper v1.7.0
 	github.com/stretchr/testify v1.5.1
 	github.com/valyala/fasttemplate v1.2.0 // indirect
-	go.etcd.io/bbolt v1.3.5
 	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381 // indirect
 	golang.org/x/sys v0.0.0-20200722175500-76b94024e4b6 // indirect

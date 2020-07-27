@@ -3,7 +3,9 @@ package api
 import (
 	"html/template"
 	"net/http"
+	"os"
 	"path"
+	"strings"
 
 	"github.com/jinzhu/gorm"
 	"github.com/juliankoehn/mchurl/config"
@@ -20,7 +22,7 @@ type API struct {
 }
 
 // New starts a new Web-Service
-func New(db *gorm.DB, config *config.Configuration) {
+func New(db *gorm.DB, config *config.Configuration) *API {
 	buildPath := path.Clean("ui/build")
 	enableAdmin := true
 
@@ -58,9 +60,16 @@ func New(db *gorm.DB, config *config.Configuration) {
 	e.GET("/:id", api.loadLink)
 
 	if enableAdmin {
+		var templatePath string
+		// used for testing
+		if strings.HasSuffix(os.Args[0], ".test") {
+			templatePath = "../templates/*.html"
+		} else {
+			templatePath = "templates/*.html"
+		}
 		// setup admin ui
 		t := &Template{
-			templates: template.Must(template.ParseGlob("templates/*.html")),
+			templates: template.Must(template.ParseGlob(templatePath)),
 		}
 		e.Renderer = t
 
@@ -98,28 +107,32 @@ func New(db *gorm.DB, config *config.Configuration) {
 	}
 	e.GET("/qrcode/:target/:dimension/:level", api.GetQRCode)
 
-	var listenAddr string
-
-	if config.Web.ListenAddr != "" {
-		listenAddr = config.Web.ListenAddr
-	} else {
-		logrus.Info("missing ListenAddr in Config")
-		listenAddr = ":1323"
-	}
-
 	if config.Web.Redirect != "" {
 		e.Any("/", func(c echo.Context) error {
 			return c.Redirect(http.StatusMovedPermanently, config.Web.Redirect)
 		})
 	}
 
-	if config.Web.UseTLS {
-		logrus.Info("Starting TLS Server")
-		go func(c *echo.Echo) {
-			e.Logger.Fatal(e.StartAutoTLS(":443"))
-		}(e)
+	return api
+}
+
+// Starts the API Server
+func (a *API) Start() {
+	var listenAddr string
+
+	if a.config.Web.ListenAddr != "" {
+		listenAddr = a.config.Web.ListenAddr
+	} else {
+		logrus.Info("missing ListenAddr in Config")
+		listenAddr = ":1323"
 	}
 
-	// Start server
-	e.Logger.Fatal(e.Start(listenAddr))
+	if a.config.Web.UseTLS {
+		logrus.Info("Starting TLS Server")
+		go func(c *echo.Echo) {
+			a.echo.Logger.Fatal(a.echo.StartAutoTLS(":443"))
+		}(a.echo)
+	}
+
+	a.echo.Logger.Fatal(a.echo.Start(listenAddr))
 }

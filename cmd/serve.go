@@ -26,7 +26,8 @@ func serve(config *config.Configuration) {
 	defer db.Close()
 	autoMigrate(db)
 
-	api.New(db, config)
+	a := api.New(db, config)
+	a.Start()
 }
 
 func autoMigrate(db *gorm.DB) {
