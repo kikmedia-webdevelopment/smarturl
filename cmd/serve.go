@@ -29,5 +29,5 @@ func serve(config *config.Configuration) {
 		logrus.Fatal(err)
 	}
 
-	api.New(store, config)
+	api.New(store, db, config)
 }
