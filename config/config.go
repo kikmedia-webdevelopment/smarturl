@@ -14,8 +14,9 @@ type EmailProviderConfiguration struct {
 
 // EmailContentConfiguration holds the configuration for emails, both subjects and template URLs.
 type EmailContentConfiguration struct {
-	Recovery    string `json:"recovery"`
-	EmailChange string `json:"email_change" split_words:"true"`
+	Confirmation string `json:"confirmation"`
+	Recovery     string `json:"recovery"`
+	EmailChange  string `json:"email_change" split_words:"true"`
 }
 
 // SMTPConfiguration is the SMTP config for the Mailer

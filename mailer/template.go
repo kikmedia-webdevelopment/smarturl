@@ -3,7 +3,6 @@ package mailer
 import (
 	"github.com/badoux/checkmail"
 	"github.com/juliankoehn/mchurl/config"
-	"github.com/juliankoehn/mchurl/models"
 )
 
 // TemplateMailer will send mail and use templates from the site for easy mail styling
@@ -21,64 +20,27 @@ const defaultEmailChangeMail = `<h2>Confirm email address change</h2>
 <p>Follow this link to confirm the update of your email address from {{ .Email }} to {{ .NewEmail }}:</p>
 <p><a href="{{ .ConfirmationURL }}">Change email address</a></p>`
 
+const defaultConfirmationMail = `<h2>Welcome</h2>
+<p>Your need User has been created.:</p>
+<p>Sign in By {{ .Email }} and pass: {{ .Password }}</p>`
+
 // ValidateEmail returns nil if the email is valid,
 // otherwise an error indicating the reason it is invalid
 func (m TemplateMailer) ValidateEmail(email string) error {
 	return checkmail.ValidateFormat(email)
 }
 
-// EmailChangeMail sends an email change confirmation mail to a user
-func (m *TemplateMailer) EmailChangeMail(user *models.User, referrerURL string) error {
-	url, err := getSiteURL(referrerURL, m.Config.Web.BaseURL, m.Config.Mailer.URLPaths.EmailChange, "email_change_token="+user.EmailChangeToken)
-	if err != nil {
-		return err
-	}
+func (m *TemplateMailer) ConfirmationMail(email, password string) error {
+
 	data := map[string]interface{}{
-		"SiteURL":         m.Config.Web.BaseURL,
-		"ConfirmationURL": url,
-		"Email":           user.Email,
-		"NewEmail":        user.EmailChange,
-		"Token":           user.EmailChangeToken,
+		"Email":    email,
+		"Password": password,
 	}
-
 	return m.Mailer.Mail(
-		user.EmailChange,
-		string(withDefault(m.Config.Mailer.Subjects.EmailChange, "Confirm Email Change")),
-		enforceRelativeURL(m.Config.Mailer.Templates.EmailChange),
-		defaultEmailChangeMail,
-		data,
-	)
-}
-
-// RecoveryMail sends a password recovery mail
-func (m *TemplateMailer) RecoveryMail(user *models.User, referrerURL string) error {
-	url, err := getSiteURL(referrerURL, m.Config.Web.BaseURL, m.Config.Mailer.URLPaths.Recovery, "recovery_token="+user.RecoveryToken)
-	if err != nil {
-		return err
-	}
-	data := map[string]interface{}{
-		"SiteURL":         m.Config.Web.BaseURL,
-		"ConfirmationURL": url,
-		"Email":           user.Email,
-		"Token":           user.RecoveryToken,
-	}
-
-	return m.Mailer.Mail(
-		user.Email,
-		string(withDefault(m.Config.Mailer.Subjects.Recovery, "Reset Your Password")),
-		enforceRelativeURL(m.Config.Mailer.Templates.Recovery),
-		defaultRecoveryMail,
-		data,
-	)
-}
-
-// Send can be used to send one-off emails to users
-func (m TemplateMailer) Send(user *models.User, subject, body string, data map[string]interface{}) error {
-	return m.Mailer.Mail(
-		user.Email,
-		subject,
-		"",
-		body,
+		email,
+		string(withDefault(m.Config.Mailer.Subjects.Confirmation, "Account created")),
+		enforceRelativeURL(m.Config.Mailer.Templates.Confirmation),
+		defaultConfirmationMail,
 		data,
 	)
 }

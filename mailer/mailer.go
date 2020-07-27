@@ -5,14 +5,11 @@ import (
 	"regexp"
 
 	"github.com/juliankoehn/mchurl/config"
-	"github.com/juliankoehn/mchurl/models"
 )
 
 // Mailer defines the interface a mailer must implement.
 type Mailer interface {
-	RecoveryMail(user *models.User, referrerURL string) error
-	EmailChangeMail(user *models.User, referrerURL string) error
-	ValidateEmail(email string) error
+	ConfirmationMail(email, password string) error
 }
 
 // NewMailer returns a new mailer

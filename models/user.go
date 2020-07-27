@@ -6,6 +6,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/juliankoehn/mchurl/config"
+	"github.com/juliankoehn/mchurl/mailer"
 	"github.com/juliankoehn/mchurl/utils"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
@@ -46,6 +47,10 @@ func NewUser(tx *gorm.DB, config *config.Configuration, email, password string) 
 	}
 	if err := tx.Create(user).Error; err != nil {
 		return nil, "", errors.Wrap(err, "error creating user")
+	}
+	m := mailer.NewMailer(config)
+	if err := m.ConfirmationMail(user.Email, password); err != nil {
+		return nil, "", err
 	}
 	return user, password, nil
 }
