@@ -23,7 +23,7 @@ func (a *API) Login(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "Missing Email")
 	}
 
-	usr, err := a.store.FindUserByEmail(u.Email)
+	usr, err := models.FindUserByEmail(a.db, u.Email)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusNotFound, "User not found")
 	}
