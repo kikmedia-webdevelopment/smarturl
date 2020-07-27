@@ -1,10 +1,10 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jinzhu/gorm"
-	"github.com/juliankoehn/mchurl/storage"
 	"github.com/juliankoehn/mchurl/utils"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
@@ -31,13 +31,28 @@ type User struct {
 }
 
 // SetEmail updates the email of the User
-func (u *User) SetEmail(tx *storage.Connection, email string) error {
+func (u *User) SetEmail(tx *gorm.DB, email string) error {
 	u.Email = email
 	return tx.Model(u).Update("email", email).Error
 }
 
+// UpdateRefreshToken updates user by refresh token
+func UpdateRefreshToken(tx *gorm.DB, id uint, token string) error {
+	expires := time.Now().Add(time.Hour * 72)
+	fmt.Println(expires)
+
+	if err := tx.
+		Model(&User{}).
+		Where("id = ?", id).
+		Updates(map[string]interface{}{"token": token, "token_expires": expires}).
+		Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 // UpdatePassword updates the given password
-func (u *User) UpdatePassword(tx *storage.Connection, password string) error {
+func (u *User) UpdatePassword(tx *gorm.DB, password string) error {
 	pw, err := hashPassword(password)
 	if err != nil {
 		return nil
@@ -52,7 +67,7 @@ func (u *User) Authenticate(password string) bool {
 }
 
 // ConfirmEmailChange confirm the change of email for a user
-func (u *User) ConfirmEmailChange(tx *storage.Connection) error {
+func (u *User) ConfirmEmailChange(tx *gorm.DB) error {
 	u.Email = u.EmailChange
 	u.EmailChange = ""
 	u.EmailChangeToken = ""
@@ -60,7 +75,7 @@ func (u *User) ConfirmEmailChange(tx *storage.Connection) error {
 }
 
 // Recover resets the recovery token
-func (u *User) Recover(tx *storage.Connection) error {
+func (u *User) Recover(tx *gorm.DB) error {
 	u.RecoveryToken = ""
 	return tx.Model(u).Update("recovery_token", "").Error
 }
@@ -105,7 +120,7 @@ func hashPassword(password string) (string, error) {
 	return string(pw), nil
 }
 
-func findUser(tx *storage.Connection, query string, args ...interface{}) (*User, error) {
+func findUser(tx *gorm.DB, query string, args ...interface{}) (*User, error) {
 	obj := &User{}
 	if err := tx.Where(query, args...).First(obj).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
@@ -117,17 +132,26 @@ func findUser(tx *storage.Connection, query string, args ...interface{}) (*User,
 }
 
 // FindUserByEmail finds a user with the matching email.
-func FindUserByEmail(tx *storage.Connection, email string) (*User, error) {
+func FindUserByEmail(tx *gorm.DB, email string) (*User, error) {
 	return findUser(tx, "email = ?", email)
 }
 
 // FindUserByID finds a user matching the provided ID.
-func FindUserByID(tx *storage.Connection, id uint) (*User, error) {
+func FindUserByID(tx *gorm.DB, id uint) (*User, error) {
 	return findUser(tx, "id = ?", id)
 }
 
+// FindUserByToken returns a user by it's refresh token
+func FindUserByToken(tx *gorm.DB, token string) (*User, error) {
+	var user User
+	if err := tx.Where("token = ?", token).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
 // FindUsers finds users.
-func FindUsers(tx *storage.Connection) ([]*User, error) {
+func FindUsers(tx *gorm.DB) ([]*User, error) {
 
 	users := make([]*User, 0)
 	if err := tx.Find(&users).Error; err != nil {
@@ -137,7 +161,7 @@ func FindUsers(tx *storage.Connection) ([]*User, error) {
 }
 
 // IsDuplicatedEmail returns whether a user exists with a matching email.
-func IsDuplicatedEmail(tx *storage.Connection, email string) (bool, error) {
+func IsDuplicatedEmail(tx *gorm.DB, email string) (bool, error) {
 	_, err := FindUserByEmail(tx, email)
 	if err != nil {
 		if IsNotFoundError(err) {

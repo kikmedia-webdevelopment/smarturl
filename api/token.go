@@ -47,7 +47,7 @@ func (a *API) generateTokenPair(usr *models.User) (*tokenPair, error) {
 		RefreshToken: refreshTokenString,
 	}
 
-	err = a.store.UserUpdateToken(usr.ID, refreshTokenString)
+	err = models.UpdateRefreshToken(a.db, usr.ID, refreshTokenString)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func (a *API) RefreshToken(c echo.Context) error {
 	}
 
 	// user with token from database
-	user, err := a.store.FindUserByToken(rtr.RefreshToken)
+	user, err := models.FindUserByToken(a.db, rtr.RefreshToken)
 	if err != nil {
 		return echo.ErrUnauthorized
 	}

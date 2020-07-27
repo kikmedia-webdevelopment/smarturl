@@ -9,13 +9,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// Connection is the interface a storage provider must implement.
-type Connection struct {
-	*gorm.DB
-}
-
 // Dial will connect to that storage engine
-func Dial(config *config.Configuration) (*Connection, error) {
+func Dial(config *config.Configuration) (*gorm.DB, error) {
 	if config.DB.Driver == "" && config.DB.URL != "" {
 		u, err := url.Parse(config.DB.URL)
 		if err != nil {
@@ -32,5 +27,5 @@ func Dial(config *config.Configuration) (*Connection, error) {
 		return nil, errors.Wrap(err, "opening database connection")
 	}
 
-	return &Connection{db}, nil
+	return db, nil
 }

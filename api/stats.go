@@ -1,14 +1,14 @@
 package api
 
-import "github.com/labstack/echo/v4"
+import (
+	"github.com/juliankoehn/mchurl/models"
+	"github.com/labstack/echo/v4"
+)
 
 func (a *API) listStats(c echo.Context) error {
-	entriesCount, totalVisits, err := a.store.ListStats()
+	stats, err := models.ListStats(a.db)
 	if err != nil {
 		return err
 	}
-	return c.JSON(200, map[string]interface{}{
-		"entries": entriesCount,
-		"visits":  totalVisits,
-	})
+	return c.JSON(200, stats)
 }

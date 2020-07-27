@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/jinzhu/gorm"
 	"github.com/juliankoehn/mchurl/config"
 	"github.com/juliankoehn/mchurl/storage"
 	"github.com/stretchr/testify/assert"
@@ -17,7 +18,7 @@ var (
 
 type UserTestSuite struct {
 	suite.Suite
-	db *storage.Connection
+	db *gorm.DB
 }
 
 func (u *UserTestSuite) TestUser() {

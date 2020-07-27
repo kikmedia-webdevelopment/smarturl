@@ -3,9 +3,9 @@ package api
 import (
 	"net/http"
 
-	"github.com/juliankoehn/mchurl/stores/shared"
+	"github.com/jinzhu/gorm"
+	"github.com/juliankoehn/mchurl/models"
 	"github.com/labstack/echo/v4"
-	"github.com/sirupsen/logrus"
 )
 
 func (a *API) loadLink(c echo.Context) error {
@@ -14,9 +14,22 @@ func (a *API) loadLink(c echo.Context) error {
 		return c.String(http.StatusNotFound, "id not found")
 	}
 
-	link, err := a.store.GetEntryAndIncrease(id)
+	var link *models.Link
+
+	err := a.db.Transaction(func(tx *gorm.DB) error {
+		var terr error
+		link, terr = models.GetLinkByID(tx, id)
+		if terr != nil {
+			return c.String(http.StatusNotFound, "id not found")
+		}
+
+		if terr := models.IncreaseVisitCounter(tx, link); terr != nil {
+			return c.String(http.StatusNotFound, "id not found")
+		}
+		return nil
+	})
+
 	if err != nil {
-		logrus.Error(err)
 		return c.String(http.StatusNotFound, "id not found")
 	}
 
@@ -29,7 +42,7 @@ func (a *API) loadLink(c echo.Context) error {
 
 // LinkDelete deletes a single entry
 func (a *API) LinkDelete(c echo.Context) error {
-	l := new(shared.Entry)
+	l := new(models.Link)
 	if err := c.Bind(l); err != nil {
 		return err
 	}
@@ -37,7 +50,7 @@ func (a *API) LinkDelete(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, "Missing ID in Request")
 	}
 
-	if err := a.store.DeleteEntry(l.ID); err != nil {
+	if err := models.DeleteEntry(a.db, l.ID); err != nil {
 		return err
 	}
 	return c.NoContent(204)
@@ -45,14 +58,12 @@ func (a *API) LinkDelete(c echo.Context) error {
 
 // LinkCreate creates a new Link
 func (a *API) LinkCreate(c echo.Context) error {
-	l := new(shared.Entry)
+	l := new(models.Link)
 	if err := c.Bind(l); err != nil {
 		return err
 	}
 
-	link, err := a.store.CreateEntry(shared.Entry{
-		URL: l.URL,
-	}, l.ID)
+	link, err := models.CreateEntry(a.db, a.config.DB.IDLength, l.URL, l.ID)
 	if err != nil {
 		return err
 	}
@@ -61,7 +72,7 @@ func (a *API) LinkCreate(c echo.Context) error {
 
 // LinksList lists all links
 func (a *API) LinksList(c echo.Context) error {
-	links, err := a.store.LinksList()
+	links, err := models.LinksList(a.db)
 	if err != nil {
 		// handle error
 	}
@@ -71,11 +82,11 @@ func (a *API) LinksList(c echo.Context) error {
 
 // LinkUpdate updates link url
 func (a *API) LinkUpdate(c echo.Context) error {
-	l := new(shared.Entry)
+	l := new(models.Link)
 	if err := c.Bind(l); err != nil {
 		return err
 	}
-	link, err := a.store.LinkUpdate(l)
+	link, err := models.LinkUpdate(a.db, l)
 	if err != nil {
 		return err
 	}

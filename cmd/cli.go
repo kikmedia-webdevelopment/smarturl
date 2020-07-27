@@ -6,8 +6,7 @@ import (
 
 	"github.com/juliankoehn/mchurl/config"
 	"github.com/juliankoehn/mchurl/models"
-	"github.com/juliankoehn/mchurl/stores"
-	"github.com/juliankoehn/mchurl/stores/shared"
+	"github.com/juliankoehn/mchurl/storage"
 	"github.com/juliankoehn/mchurl/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -27,26 +26,30 @@ func createUser(config *config.Configuration, cmd *cobra.Command) {
 		}
 	}
 
-	store, err := stores.New(&config.DB)
-	if err != nil {
-		logrus.Fatal(err)
-		os.Exit(1)
-	}
-
 	pass, err := utils.RandomPass(12)
 	if err != nil {
 		logrus.Fatal(err)
 		os.Exit(1)
 	}
 
-	user, err := store.CreateUser(models.User{
+	db, err := storage.Dial(config)
+	if err != nil {
+		logrus.Fatalf("Error opening database: %+v", err)
+	}
+	defer db.Close()
+	autoMigrate(db)
+
+	user := &models.User{
 		Password: pass,
 		Email:    email,
-	})
+	}
+
+	err = db.Create(user).Error
 	if err != nil {
 		logrus.Fatalf("Error while creating User: %+v", err)
 		os.Exit(1)
 	}
+
 	logrus.Infof("User `%s` with password `%s` created", user.Email, pass)
 }
 
@@ -64,13 +67,14 @@ func delete(config *config.Configuration, cmd *cobra.Command) {
 		os.Exit(1)
 	}
 
-	store, err := stores.New(&config.DB)
+	db, err := storage.Dial(config)
 	if err != nil {
-		logrus.Fatal(err)
-		os.Exit(1)
+		logrus.Fatalf("Error opening database: %+v", err)
 	}
+	defer db.Close()
+	autoMigrate(db)
 
-	err = store.DeleteEntry(code)
+	err = models.DeleteEntry(db, code)
 	if err != nil {
 		logrus.Fatal(err)
 		os.Exit(1)
@@ -106,15 +110,14 @@ func create(config *config.Configuration, cmd *cobra.Command) {
 		}
 	}
 
-	store, err := stores.New(&config.DB)
+	db, err := storage.Dial(config)
 	if err != nil {
-		logrus.Fatal(err)
-		os.Exit(1)
+		logrus.Fatalf("Error opening database: %+v", err)
 	}
+	defer db.Close()
+	autoMigrate(db)
 
-	_, err = store.CreateEntry(shared.Entry{
-		URL: uri,
-	}, code)
+	_, err = models.CreateEntry(db, config.DB.IDLength, uri, code)
 	if err != nil {
 		logrus.Fatal(err)
 		os.Exit(1)

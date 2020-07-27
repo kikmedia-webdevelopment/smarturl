@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/juliankoehn/mchurl/storage"
+	"github.com/jinzhu/gorm"
 	"github.com/pkg/errors"
 )
 
@@ -66,7 +66,7 @@ func (AuditLogEntry) TableName() string {
 }
 
 // NewAuditLogEntry creates a new audit entry
-func NewAuditLogEntry(tx *storage.Connection, actor *User, action AuditAction) error {
+func NewAuditLogEntry(tx *gorm.DB, actor *User, action AuditAction) error {
 	id, err := uuid.NewRandom()
 	if err != nil {
 		return errors.Wrap(err, "Error generating unique id")

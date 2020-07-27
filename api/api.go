@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"path"
 
+	"github.com/jinzhu/gorm"
 	"github.com/juliankoehn/mchurl/config"
-	"github.com/juliankoehn/mchurl/storage"
-	"github.com/juliankoehn/mchurl/stores"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
@@ -15,14 +14,13 @@ import (
 )
 
 type API struct {
-	store  *stores.Store
-	db     *storage.Connection
+	db     *gorm.DB
 	echo   *echo.Echo
 	config *config.Configuration
 }
 
 // New starts a new Web-Service
-func New(store *stores.Store, db *storage.Connection, config *config.Configuration) {
+func New(db *gorm.DB, config *config.Configuration) {
 	buildPath := path.Clean("ui/build")
 	enableAdmin := true
 
@@ -52,7 +50,6 @@ func New(store *stores.Store, db *storage.Connection, config *config.Configurati
 	}
 
 	api := &API{
-		store:  store,
 		echo:   e,
 		config: config,
 		db:     db,
