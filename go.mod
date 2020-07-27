@@ -4,7 +4,6 @@ go 1.14
 
 require (
 	github.com/badoux/checkmail v0.0.0-20200623144435-f9f80cb795fa
-	github.com/delivc/team v0.0.0-20200312095701-d0b1591d2c73
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/google/uuid v1.1.1
