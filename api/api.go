@@ -97,6 +97,7 @@ func New(db *gorm.DB, config *config.Configuration) *API {
 		}))
 		a.POST("/users/authenticate", api.Login)
 		a.POST("/users/refresh", api.RefreshToken)
+		a.POST("/users/change-password", api.changePassword)
 		a.GET("/links", api.LinksList)
 		a.PATCH("/links", api.LinkUpdate)
 		a.POST("/links", api.LinkCreate)
