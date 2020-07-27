@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table, Modal, Form, TextInput, FormLabel, Button, IconButton, ModalConfirm, Menu, Icon } from 'components';
+import { Table, Modal, Form, TextInput, FormLabel, Button, ModalConfirm, Menu } from 'components';
 import { linkService } from 'services/link.service';
 import { Link } from 'models/link';
 import { uid } from 'react-uid'
