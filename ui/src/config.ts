@@ -1,4 +1,7 @@
+const devURL = 'http://localhost:8080'
+
 export default {
     // probs dev if not present
-    apiUrl: window.config?.apiurl ?? 'http://localhost:8080/api'
+    baseUrl: window.config?.apiurl ?? devURL,
+    apiUrl: window.config?.apiurl ? `${window.config.apiurl}/api` : `${devURL}/api`
 }

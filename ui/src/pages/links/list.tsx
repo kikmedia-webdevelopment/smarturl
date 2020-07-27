@@ -1,8 +1,10 @@
 import React from 'react';
-import { Table, Modal, Form, TextInput, FormLabel, Button, IconButton, ModalConfirm } from 'components';
+import { Table, Modal, Form, TextInput, FormLabel, Button, IconButton, ModalConfirm, Menu, Icon } from 'components';
 import { linkService } from 'services/link.service';
 import { Link } from 'models/link';
 import { uid } from 'react-uid'
+import { Popover } from 'components/Popover/Popover';
+import config from 'config';
 
 interface Props {}
 interface State {
@@ -155,17 +157,15 @@ export class LinkList extends React.Component<Props, State> {
             showDeleteConfirm: true,
             currentLink: Object.assign({}, item)
         })
-        /**
-         * linkService.destroy(item)
-            .then(() => {
-                let { links } = this.state
-                links = links.filter(l => l.id !== item.id)
-                this.setState({
-                    links: links
-                })
-            })
-            .finally(() => this.setState({ loading: false }))
-         */
+    }
+
+    onGetQRCodeClick = (item: Link) => {
+        const code = encodeURIComponent(`${config.baseUrl}/${item.id}`)
+        const url = `${config.baseUrl}/qrcode/${code}/256/1`
+        if (window) {
+            let win = window.open(url, '_blank')
+            win?.focus()
+        }
     }
 
     render() {
@@ -211,17 +211,33 @@ export class LinkList extends React.Component<Props, State> {
                                         </Table.Item>
                                         <Table.Item>
                                             <div className="grid gap-1 grid-flow-col">
-                                                <IconButton
-                                                    onClick={() => this.onDeleteClick(link)}
-                                                    label="Link Löschen"
-                                                    iconName="trash"
-                                                    variant="danger"
-                                                />
-                                                <IconButton
-                                                    onClick={() => this.onEditClick(link)}
-                                                    label="Link Bearbeiten"
-                                                    iconName="edit"
-                                                />
+                                                <Popover
+                                                    trigger={
+                                                        <span className="cursor-pointer select-none">...</span>
+                                                    }
+                                                >
+                                                    <Menu>
+                                                        <Menu.Group>
+                                                            <Menu.Item
+                                                                onClick={() => this.onGetQRCodeClick(link)}
+                                                            >
+                                                                QR Code Anzeigen
+                                                            </Menu.Item>
+                                                            <Menu.Item
+                                                                onClick={() => this.onEditClick(link)}
+                                                            >
+                                                                Bearbeiten
+                                                            </Menu.Item>
+                                                        </Menu.Group>
+                                                        <Menu.Group>
+                                                            <Menu.Item
+                                                                onClick={() => this.onDeleteClick(link)}
+                                                            >
+                                                                Löschen...
+                                                            </Menu.Item>
+                                                        </Menu.Group>
+                                                    </Menu>
+                                                </Popover>
                                             </div>
 
                                         </Table.Item>

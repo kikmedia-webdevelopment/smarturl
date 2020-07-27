@@ -95,9 +95,8 @@ func New(store *stores.Store, config *config.Configuration) {
 
 		a.GET("/stats", api.listStats)
 
-		a.GET("/qrcode/:target", api.GetQRCode)
-		a.POST("/qrcode/:target", api.GetQRCode)
 	}
+	e.GET("/qrcode/:target/:dimension/:level", api.GetQRCode)
 
 	var listenAddr string
 
