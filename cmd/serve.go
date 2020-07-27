@@ -3,8 +3,10 @@ package cmd
 import (
 	"github.com/juliankoehn/mchurl/api"
 	"github.com/juliankoehn/mchurl/config"
+	"github.com/juliankoehn/mchurl/models"
 	"github.com/juliankoehn/mchurl/storage"
 	"github.com/juliankoehn/mchurl/stores"
+	"github.com/juliankoehn/mchurl/stores/shared"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -23,6 +25,7 @@ func serve(config *config.Configuration) {
 		logrus.Fatalf("Error opening database: %+v", err)
 	}
 	defer db.Close()
+	autoMigrate(db)
 
 	store, err := stores.New(&config.DB)
 	if err != nil {
@@ -30,4 +33,12 @@ func serve(config *config.Configuration) {
 	}
 
 	api.New(store, db, config)
+}
+
+func autoMigrate(db *storage.Connection) {
+	db.AutoMigrate(
+		&shared.Entry{},
+		&models.User{},
+		&models.AuditLogEntry{},
+	)
 }
