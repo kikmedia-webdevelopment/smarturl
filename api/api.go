@@ -6,6 +6,7 @@ import (
 	"path"
 
 	"github.com/juliankoehn/mchurl/config"
+	"github.com/juliankoehn/mchurl/storage"
 	"github.com/juliankoehn/mchurl/stores"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -15,12 +16,13 @@ import (
 
 type API struct {
 	store  *stores.Store
+	db     *storage.Connection
 	echo   *echo.Echo
 	config *config.Configuration
 }
 
 // New starts a new Web-Service
-func New(store *stores.Store, config *config.Configuration) {
+func New(store *stores.Store, db *storage.Connection, config *config.Configuration) {
 	buildPath := path.Clean("ui/build")
 	enableAdmin := true
 
@@ -53,6 +55,7 @@ func New(store *stores.Store, config *config.Configuration) {
 		store:  store,
 		echo:   e,
 		config: config,
+		db:     db,
 	}
 
 	e.GET("/:id", api.loadLink)
