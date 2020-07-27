@@ -40,7 +40,7 @@ func New(config *config.DBConfiguration) (*Store, error) {
 	}
 
 	switch driver := config.Driver; driver {
-	case "sqlite":
+	case "sqlite", "sqlite3":
 		s, err = sqlite.New(config.URL)
 	default:
 		return nil, errors.New(driver + " is not a recognized database driver")
