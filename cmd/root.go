@@ -3,9 +3,7 @@ package cmd
 import (
 	"os"
 
-	"github.com/juliankoehn/mchurl/api"
 	"github.com/juliankoehn/mchurl/config"
-	"github.com/juliankoehn/mchurl/stores"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -84,23 +82,6 @@ func execWithConfig(cmd *cobra.Command, fn func(config *config.Configuration)) {
 		logrus.Fatalf("Failed to load configuration: %+v", err)
 	}
 	fn(config)
-}
-
-var serveCmd = cobra.Command{
-	Use:  "serve",
-	Long: "Start the URL-Shortener WebService",
-	Run: func(cmd *cobra.Command, args []string) {
-		execWithConfig(cmd, serve)
-	},
-}
-
-func serve(config *config.Configuration) {
-	store, err := stores.New(&config.DB)
-	if err != nil {
-		logrus.Fatal(err)
-	}
-
-	api.New(store, config)
 }
 
 func fileExists(filename string) bool {
