@@ -7,7 +7,6 @@ import (
 	"github.com/juliankoehn/mchurl/config"
 	"github.com/juliankoehn/mchurl/models"
 	"github.com/juliankoehn/mchurl/storage"
-	"github.com/juliankoehn/mchurl/utils"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -26,12 +25,6 @@ func createUser(config *config.Configuration, cmd *cobra.Command) {
 		}
 	}
 
-	pass, err := utils.RandomPass(12)
-	if err != nil {
-		logrus.Fatal(err)
-		os.Exit(1)
-	}
-
 	db, err := storage.Dial(config)
 	if err != nil {
 		logrus.Fatalf("Error opening database: %+v", err)
@@ -39,18 +32,13 @@ func createUser(config *config.Configuration, cmd *cobra.Command) {
 	defer db.Close()
 	autoMigrate(db)
 
-	user := &models.User{
-		Password: pass,
-		Email:    email,
-	}
-
-	err = db.Create(user).Error
+	user, password, err := models.NewUser(db, config, email, "")
 	if err != nil {
-		logrus.Fatalf("Error while creating User: %+v", err)
+		logrus.Fatal(err)
 		os.Exit(1)
 	}
 
-	logrus.Infof("User `%s` with password `%s` created", user.Email, pass)
+	logrus.Infof("User `%s` with password `%s` created", user.Email, password)
 }
 
 func delete(config *config.Configuration, cmd *cobra.Command) {

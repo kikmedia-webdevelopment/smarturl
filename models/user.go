@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/juliankoehn/mchurl/config"
 	"github.com/juliankoehn/mchurl/utils"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
@@ -28,6 +29,25 @@ type User struct {
 	EmailChange       string     `json:"new_email,omitempty" db:"email_change"`
 	EmailChangeSentAt *time.Time `json:"email_change_sent_at,omitempty" db:"email_change_sent_at"`
 	LastSignInAt      *time.Time `json:"last_sign_in_at,omitempty" db:"last_sign_in_at"`
+}
+
+// NewUser creates a new User
+func NewUser(tx *gorm.DB, config *config.Configuration, email, password string) (*User, string, error) {
+	if password == "" {
+		pass, err := utils.RandomPass(12)
+		if err != nil {
+			return nil, "", errors.Wrap(err, "error generating password")
+		}
+		password = pass
+	}
+	user := &User{
+		Password: password,
+		Email:    email,
+	}
+	if err := tx.Create(user).Error; err != nil {
+		return nil, "", errors.Wrap(err, "error creating user")
+	}
+	return user, password, nil
 }
 
 // SetEmail updates the email of the User
