@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/jinzhu/gorm"
@@ -87,6 +88,7 @@ func (a *API) LinkUpdate(c echo.Context) error {
 	if err := c.Bind(l); err != nil {
 		return err
 	}
+	fmt.Println(l)
 	link, err := models.LinkUpdate(a.db, l)
 	if err != nil {
 		return err

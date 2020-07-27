@@ -1,6 +1,6 @@
-import { authHeader, handleResponse } from 'helpers'
-import config from 'config'
 import { Link } from 'models/link'
+import api from './api.service'
+import { AxiosResponse } from 'axios'
 
 export const linkService = {
     list,
@@ -9,62 +9,20 @@ export const linkService = {
     destroy
 }
 
-function destroy(link: Link) {
-    const requestOptions = {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-            ...authHeader()
-        },
-        body: JSON.stringify(link)
-    }
-    return fetch(`${config.apiUrl}/links`, requestOptions as RequestInit)
-        .then(handleResponse)
-        .then((response: Link[]) => {
-            return response
-        })
+async function destroy(link: Link): Promise<AxiosResponse<void>> {
+    return api.delete<void>('/links', {
+        data: link
+    }).then((res) => Promise.resolve(res))
 }
 
-function list() {
-    const requestOptions = {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            ...authHeader()
-        }
-    }
-
-    return fetch(`${config.apiUrl}/links`, requestOptions as RequestInit)
-        .then(handleResponse)
-        .then((response: Link[]) => {
-            return response
-        })
+async function list() {
+    return api.get<Link[]>('/links').then(res => res.data)
 }
 
-function update(link: Link) {
-    const requestOptions = {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json',
-            ...authHeader()
-        },
-        body: JSON.stringify(link)
-    }
-    return fetch(`${config.apiUrl}/links`, requestOptions as RequestInit)
-        .then(handleResponse)
-        .then(res => res)
+async function update(link: Link) {
+    return api.patch<Link>('/links', link).then(res => res.data)
 }
 
-function create(link: Link) {
-    const requestOptions = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            ...authHeader()
-        },
-        body: JSON.stringify(link)
-    }
-    return fetch(`${config.apiUrl}/links`, requestOptions as RequestInit)
-        .then(handleResponse)
-        .then(res => res)
+async function create(link: Link) {
+    return api.post<Link>('/links', link).then(res => res.data)
 }

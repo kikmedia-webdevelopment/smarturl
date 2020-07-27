@@ -1,7 +1,6 @@
 import { BehaviorSubject } from 'rxjs'
-import config from 'config'
-import { handleResponse } from 'helpers/handleResponse'
 import { parseJwt } from 'helpers'
+import api from './api.service'
 
 // @ts-ignore
 const currentUserSubject = new BehaviorSubject(JSON.parse(localStorage.getItem('currentUser')))
@@ -28,7 +27,7 @@ export const authenticationService = {
     get currentTokenObject() { return tokenSubject.value }
 }
 
-interface TokenResponse {
+export interface TokenResponse {
     access_token: string
     refresh_token: string
 }
@@ -36,15 +35,11 @@ interface TokenResponse {
 function refresh() {
     if (tokenSubject.value) {
         const { refresh_token } = tokenSubject.value
-        const requestOptions = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ refresh_token })
-        }
-        return fetch(`${config.apiUrl}/users/refresh`, requestOptions)
-            .then(handleResponse)
-            .then((tokenObject: TokenResponse) => {
+        return api.post<TokenResponse>('/users/refresh', { 'refresh_token': refresh_token})
+            .then((res) => {
+                const tokenObject = res.data
                 const parsedUser = parseJwt(tokenObject.access_token)
+
                 // store user details and jwt token in local storage to keep user logged in between page refreshes
                 localStorage.setItem('currentUser', JSON.stringify(parsedUser))
                 localStorage.setItem('refreshToken', JSON.stringify(tokenObject.refresh_token))
@@ -53,25 +48,20 @@ function refresh() {
                 tokenSubject.next(tokenObject)
                 refreshTokenSubject.next(tokenObject.refresh_token)
 
-                return tokenObject
+                return Promise.resolve(true)
             })
-
     } else {
         authenticationService.logout()
         window.location.reload(true)
+        return Promise.reject(false)
     }
 }
 
-function login(email: string, password: string) {
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-    }
+async function login(email: string, password: string) {
+    return api.post<TokenResponse>('/users/authenticate', { email, password })
+        .then(response => {
+            const tokenObject = response.data
 
-    return fetch(`${config.apiUrl}/users/authenticate`, requestOptions)
-        .then(handleResponse)
-        .then((tokenObject: TokenResponse) => {
             const parsedUser = parseJwt(tokenObject.access_token)
             // store user details and jwt token in local storage to keep user logged in between page refreshes
             localStorage.setItem('currentUser', JSON.stringify(parsedUser))

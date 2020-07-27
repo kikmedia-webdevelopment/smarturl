@@ -11,14 +11,15 @@ import (
 
 // Link is the data for our "relinker-url-shortener"
 type Link struct {
-	ID                    string     `json:"id"`
-	URL                   string     `json:"url"`
-	RemoteAddr            string     `json:",omitempty"`
-	DeletionURL           string     `json:",omitempty"`
-	Password              []byte     `json:",omitempty"`
-	LastVisit, Expiration *time.Time `json:",omitempty"`
-	CreatedOn             *time.Time `json:"-"`
-	VisitCount            int
+	ID          string     `json:"id"`
+	URL         string     `json:"url"`
+	RemoteAddr  string     `json:",omitempty"`
+	DeletionURL string     `json:",omitempty"`
+	Password    []byte     `json:",omitempty"`
+	LastVisit   *time.Time `json:"last_visit, omitempty"`
+	Expiration  *time.Time `json:"expiration,omitempty"`
+	CreatedOn   *time.Time `json:"-"`
+	VisitCount  int
 }
 
 // CreateEntry  creates an entry by a given ID and returns an error
