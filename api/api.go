@@ -94,6 +94,9 @@ func New(store *stores.Store, config *config.Configuration) {
 		a.DELETE("/links", api.LinkDelete)
 
 		a.GET("/stats", api.listStats)
+
+		a.GET("/qrcode/:target", api.GetQRCode)
+		a.POST("/qrcode/:target", api.GetQRCode)
 	}
 
 	var listenAddr string
