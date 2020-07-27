@@ -317,7 +317,7 @@ export class LinkList extends React.Component<Props, State> {
                                         />
                                     </div>
                                     <div>
-                                        <FormLabel htmlFor="code" required>CODE</FormLabel>
+                                        <FormLabel htmlFor="code">CODE</FormLabel>
                                         <TextInput
                                             value={this.state.currentLink.id}
                                             name="code"
