@@ -4,34 +4,82 @@ import ReactDOM from 'react-dom'
 
 type UnknownProps = Record<string, any>
 
-let portalContainer: HTMLDivElement
 
-export class Portal extends React.Component<UnknownProps> {
+const createContainer = (): HTMLDivElement => {
+    const container = document.createElement('div')
+    container.setAttribute('class', 'jk-portal')
+    return container
+}
+const getBody = (): HTMLElement => {
+    return document && document.body
+}
+
+const getPortalParent = () => {
+    const parentElement = document.querySelector(
+        'body > .jk-portal-container'
+    )
+    if (!parentElement) {
+        const parent = document.createElement('div');
+        parent.setAttribute('class', 'jk-portal-container');
+        parent.setAttribute('style', `display: flex;`);
+        getBody().appendChild(parent)
+        return parent
+    }
+    return parentElement
+}
+
+type State = {
+    container?: HTMLElement
+    portalIsMounted: boolean
+}
+
+export class Portal extends React.Component<UnknownProps, State> {
     el!: HTMLDivElement
     
     constructor(props: UnknownProps) {
         super(props)
 
-        // This fixes SSR
-        if (!canUseDom) return
+        this.state = {
+            container: canUseDom ? createContainer() : undefined,
+            portalIsMounted: false
+        }
+    }
 
-        if (!portalContainer) {
-            portalContainer = document.createElement('div')
-            portalContainer.setAttribute('jk-portal-container', '')
-            document.body.appendChild(portalContainer)
+    componentDidMount() {
+        const { container } = this.state
+        if (container) {
+            getPortalParent().appendChild(container)
+        } else {
+            // SSR path
+            const newContainer = createContainer()
+            this.setState({
+                container: newContainer
+            })
         }
 
-        this.el = document.createElement('div')
-        portalContainer.appendChild(this.el)
+        this.setState({
+            portalIsMounted: true
+        })
     }
 
     componentWillUnmount() {
-        portalContainer.removeChild(this.el)
+        const { container } = this.state
+        if (container) {
+            getPortalParent().removeChild(container)
+            const portals = !!document.querySelector(
+                'body > .jk-portal-container > .jk-portal',
+            )
+            if (!portals) {
+                getBody().removeChild(getPortalParent());
+            }
+        }
     }
 
     render() {
-        // This fixes SSR
-        if (!canUseDom) return null
-        return ReactDOM.createPortal(this.props.children, this.el)
+        const { container, portalIsMounted } = this.state
+
+        return container && portalIsMounted
+            ? ReactDOM.createPortal(this.props.children, container)
+            : null
     }
 }
