@@ -2,7 +2,7 @@ Secret: "awesomeS3cr3101"
 Web:
   ListenAddr: :8080
   BaseURL: "http://localhost:8080"
-  Redirect: "https://www.modecentrum-hamburg.de/"
+  Redirect: "https://smart-ts.career/"
 DB:
     Driver: "sqlite"
     URL: "database.db"
