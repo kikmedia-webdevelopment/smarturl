@@ -6,7 +6,7 @@
 
 # cli commands
 
-- mchurl create -u https://www.modecentrum-hamburg.de/das-mch/service.html -c code
+- mchurl create -u https://smart-testsolutions.de/service.html -c code
 - - `INFO[0000] ShortURL by code has been created`
 - mchurl delete -c code
 - - `INFO[0000] ShortURL by code has been deleted`
