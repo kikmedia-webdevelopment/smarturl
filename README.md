@@ -1,8 +1,8 @@
-# tiny URL Shortener for `Mode-Centrum-Hamburg`
+# tiny URL Shortener for `smart testsolutions`
 
 ![Test Go Application](https://github.com/juliankoehn/mchurl/workflows/Test%20Go%20Application/badge.svg)
 
-`MCHURL` ist ein URL-Shortening Service für das [Mode-Centrum Hamburg](https://www.modecentrum-hamburg.de/). 
+`MCHURL` ist ein URL-Shortening Service für das [smart testsolutions](https://smart-testsolutions.de/). 
 
 # cli commands
 
